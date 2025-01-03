@@ -1,3 +1,3 @@
-export function greet(name: string): string {
-  return `Hello, ${name}!`;
-}
+import { Hkqr } from './hkqr.class';
+
+export default Hkqr;
