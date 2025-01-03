@@ -4,7 +4,9 @@ import { payload, PF } from './payload';
 export class Hkqr {
   private pointOfInitiationMethod: string = '11';
   private uuid = 'hk.com.hkicl';
-  private merchantId: string = '';
+  private fpsId = '';
+  private fpsPhoneNo = '';
+  private fpsEmail = '';
   private merchantCategoryCode: string = '0000';
   private countryCode: string = 'HK';
   private merchantName: string = '';
@@ -24,13 +26,39 @@ export class Hkqr {
   private purposeOfTransaction: string = '';
   private additionalConsumerDataRequest: string = '';
 
-  constructor(_merchantId: string, _merchantName: string) {
-    this.merchantId = _merchantId;
+  constructor(_merchantName: string) {
     this.merchantName = _merchantName;
   }
 
   setPointOfInitiationMethod(val: 'static' | 'dynamic') {
     this.pointOfInitiationMethod = val === 'static' ? '11' : '12';
+  }
+
+  setFpsId(val: string) {
+    if (val.length > 25) {
+      throw new Error('FPS ID must be 25 characters long or less');
+    }
+    this.fpsId = val;
+    this.fpsEmail = '';
+    this.fpsPhoneNo = '';
+  }
+
+  setFpsPhoneNo(val: string) {
+    if (val.length !== 8) {
+      throw new Error('FPS Phone number must be 8 characters long');
+    }
+    this.fpsPhoneNo = `+852-${val}`;
+    this.fpsId = '';
+    this.fpsEmail = '';
+  }
+
+  setFpsEmail(val: string) {
+    if (val.length > 25) {
+      throw new Error('FPS Email must be 25 characters long or less');
+    }
+    this.fpsEmail = val;
+    this.fpsId = '';
+    this.fpsPhoneNo = '';
   }
 
   setCountryCode(val: string) {
@@ -177,7 +205,10 @@ export class Hkqr {
     res += payload(PF.pointOfInitiation, this.pointOfInitiationMethod); // Point of Initiation Method
     res += payload(
       PF.merchantAccountInfo,
-      payload(PF.merchantAccountInfoGloballyUniqueIdentifier, this.uuid) + payload(PF.merchantAccountInfoMerchantID, this.merchantId),
+      payload(PF.merchantAccountInfoGloballyUniqueIdentifier, this.uuid) +
+        payload(PF.fpsId, this.fpsId) +
+        payload(PF.fpsPhoneNo, this.fpsPhoneNo) +
+        payload(PF.fpsEmail, this.fpsEmail),
     ); // Merchant Account Information (Globally Unique Identifier + Merchant ID)
 
     if (this.pointOfInitiationMethod === '12') {

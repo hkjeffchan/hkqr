@@ -1,6 +1,6 @@
 {
   "name": "hkqr",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Hong Kong Common QR Code Generator",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
